@@ -1,0 +1,3 @@
+. ./console   bin/magento c:f "$@"
+
+return $?;

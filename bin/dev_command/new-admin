@@ -1,0 +1,10 @@
+USER=$1
+if [ -z $1 ]; then
+  USER=leandrorosa
+fi
+
+
+echo "bin/magento admin:user:create --admin-user=$USER --admin-password=rosa123 --admin-email=$USER@mailinator.com --admin-firstname=Leandro --admin-lastname=Rosa"
+
+. ./console  bin/magento admin:user:create --admin-user="$USER" --admin-password="rosa123" --admin-email="$USER@mailinator.com" --admin-firstname="Leandro" --admin-lastname="Rosa";
+return $?;

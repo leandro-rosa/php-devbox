@@ -1,0 +1,23 @@
+cd $DEV_WORKSPACE_PATH/$DEV_PROJECTPATH;
+
+
+git add .;
+git stash ;
+
+git fetch -p;
+git checkout $1;
+git reset --hard origin/$1;
+
+rm -rf vendor/;
+
+dev composer2 install;
+
+git checkout .gitignore;
+
+dev apply-patch;
+dev console bin/magento setup:upgrade;
+
+
+return $?;
+
+

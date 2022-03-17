@@ -1,0 +1,141 @@
+STORE_DIR=null
+PROJECT=null
+BRANCH=staging
+
+function setEnv() {
+  if [ -z ${MYSQL_ROOT_PASSWORD} ]; then
+        cd ${DEVBOX};
+        cd '../';
+        source .env;
+    fi
+}
+
+function init() {
+  if [ -z $PROJECT ]; then
+    printf '%s\n' "ERROR: Please enter PROJECT name" >&2
+    exit 1
+  fi
+
+  if [ ! -d $STORE_DIR ]; then
+    printf '%s\n' "ERROR: Store $PROJECT does not exists." >&2
+    exit 1
+  fi
+}
+
+function importDb() {
+
+  if [ -z $PROJECT ]; then
+    printf '%s\n' "ERROR: Please enter PROJECT name" >&2
+    exit 1
+  fi
+
+  setEnv;
+  cd $STORE_DIR
+
+  cd '../'
+
+  echo "### REMOVE DEFINER ###"
+  sed -i 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/' .dump.sql
+
+  echo "### START DUMP ####"
+  /usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 $PROJECT < .dump.sql
+}
+
+function clear() {
+  setEnv;
+  if [ -z $PROJECT ]; then
+    printf '%s\n' "ERROR: Please enter PROJECT name" >&2
+    exit 1
+  fi
+
+  echo "### CLEAR ENVIRONMENT ####"
+  cd $STORE_DIR
+  git add .
+  git stash
+  git checkout $BRANCH
+  git fetch -p origin
+  git reset --hard origin/$BRANCH
+
+  rm -rf vendor/
+
+  /usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 -e "DROP DATABASE IF EXISTS $PROJECT"
+}
+function install() {
+  setEnv;
+  if [ -z $PROJECT ]; then
+    printf '%s\n' "ERROR: Please enter PROJECT name" >&2
+    exit 1
+  fi
+
+
+
+  echo "### INSTALL PROJECT ###"
+  /usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 -e "CREATE DATABASE IF NOT EXISTS $PROJECT"
+
+  cd $STORE_DIR
+
+  sed -i "s/CHANGE_ME/${MYSQL_ROOT_PASSWORD}/g" app/etc/env.php.dev app/etc/env.php
+
+#  dev composer1 install 
+	dev composer2 install
+  git checkout .gitignore
+}
+
+function configureDb() {
+  setEnv;
+  if [ -z $PROJECT ]; then
+    printf '%s\n' "ERROR: Please enter PROJECT name" >&2
+    exit 1
+  fi
+
+  cd $STORE_DIR
+  echo "### IMPORT CONFIG ###"
+  dev magerun2 app:config:import
+
+
+  echo "### CONFIGURE ELASTICSEARCH ###"
+  dev magerun2 config:set catalog/search/elasticsearch7_server_hostname elasticsearch7 --lock-env
+
+  echo "### CONFIGURE BASE URL ###"
+  dev magerun2 config:set web/unsecure/base_url http://$PROJECT.magento2.localhost/ --lock-env
+  dev magerun2 config:set web/secure/base_url http://$PROJECT.magento2.localhost/ --lock-env
+
+  echo "### CONFIGURE ADMIN SESSION LIFETIME ###"
+  dev magerun2 config:set admin/security/session_lifetime 31536000 --lock-env
+
+  echo "### CONFIGURE MFTF ###"
+  dev magerun2 config:set admin/security/use_form_key 0 --lock-env
+  dev magerun2 config:set admin/security/admin_account_sharing 1 --lock-env
+  dev magerun2 config:set cms/wysiwyg/enabled disabled --lock-env
+  dev magerun2 config:set web/seo/use_rewrites 1 --lock-env
+
+  echo "### ENABLE TEMPLATE SYMLINK ###"
+  dev magerun2 config:set dev/template/allow_symlink 1 --lock-env
+
+  echo "### RUN SETUP UPGRADE ###"
+  dev magerun2 setup:upgrade
+
+  dev apply-patch
+}
+
+while getopts "p:i:a:c:d:b:" OPT; do
+  case "$OPT" in
+  "p")
+    PROJECT=${OPTARG};
+    STORE_DIR="${DEVBOX}/$PROJECT/magento2";
+    ;;
+  "b") BRANCH=${OPTARG} ;;
+  "i") install ;;
+  "d") importDb ;;
+  "a")
+    clear;
+    install;
+    importDb;
+    configureDb;
+    ;;
+  "c") configureDb ;;
+  "*") exit 1 ;;
+  esac
+done
+
+echo "### FINISH ###"

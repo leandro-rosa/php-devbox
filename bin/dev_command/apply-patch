@@ -1,0 +1,3 @@
+. ./console  ./vendor/bin/ece-patches apply;
+
+return $?;
