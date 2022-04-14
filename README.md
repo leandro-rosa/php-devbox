@@ -81,6 +81,9 @@ If you were already using this repository before (or want a local directory), yo
 ```
 mkdir -p mysql;
 docker volume create -o 'type=none' -o 'device='${PWD}'/mysql' -o 'o=bind' dockerdev-mysql-volume
+
+mkdir -p mariadb;
+docker volume create -o 'type=none' -o 'device='${PWD}'/mariadb' -o 'o=bind' dockerdev-mariadb-volume
 ```
 Or, if you are on OSX:
 ```

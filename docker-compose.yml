@@ -3,6 +3,8 @@ networks: {}
 volumes:
   dockerdev-mysql-volume:
     external: true
+  dockerdev-mariadb-volume:
+    external: true
   dockerdev-workspace-volume:
     external: true
 
@@ -14,6 +16,8 @@ services:
       MYSQL_ROOT_PASSWORD: magento2
       MARIADB_ROOT_PASSWORD: magento2
     network_mode: bridge
+    volumes:
+      - dockerdev-mariadb-volume:/var/lib/mysql:rw
     ports:
       - "3308:3306"
 
@@ -41,7 +45,6 @@ services:
     volumes:
       - dockerdev-workspace-volume:/data
     links:
-      - db
       - mariadb
       - mailcatch
       - redis
@@ -54,7 +57,6 @@ services:
     volumes:
       - dockerdev-workspace-volume:/data
     links:
-      - db
       - mailcatch
       - redis
     network_mode: bridge
@@ -66,7 +68,6 @@ services:
     volumes:
       - dockerdev-workspace-volume:/data
     links:
-      - db
       - mailcatch
       - redis
     network_mode: bridge
@@ -80,7 +81,6 @@ services:
     volumes:
       - dockerdev-workspace-volume:/data
     links:
-      - db
       - mailcatch
       - redis
     network_mode: bridge
@@ -94,7 +94,6 @@ services:
     volumes:
       - dockerdev-workspace-volume:/data
     links:
-      - db
       - mariadb
       - mailcatch
       - redis
@@ -106,10 +105,10 @@ services:
         - FROM_TAG=php74-fpm
     environment:
       - "BLACKFIRE_AGENT_SOCKET=unix:///dev/null"
+      - "MFTF_DEBUG=1"
     volumes:
       - dockerdev-workspace-volume:/data
     links:
-      - db
       - mariadb
       - mailcatch
       - redis
@@ -124,7 +123,6 @@ services:
     volumes:
       - dockerdev-workspace-volume:/data
     links:
-      - db
       - mailcatch
       - redis
     network_mode: bridge
@@ -139,7 +137,6 @@ services:
     volumes:
       - dockerdev-workspace-volume:/data
     links:
-      - db
       - mailcatch
       - redis
     network_mode: bridge
