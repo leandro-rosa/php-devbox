@@ -9,29 +9,16 @@ volumes:
     external: true
 
 services:
-  mariadb:
+  db:
     image: mariadb:10.4
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: magento2
-      MARIADB_ROOT_PASSWORD: magento2
+      db_ROOT_PASSWORD: magento2
     network_mode: bridge
     volumes:
       - dockerdev-mariadb-volume:/var/lib/mysql:rw
     ports:
       - "3308:3306"
-
-  db:
-    container_name: dockerdev-db
-    image: percona
-    volumes:
-      - ./conf.d/mysql/my.cnf:/etc/my.cnf.d/development.cnf:ro
-      - dockerdev-mysql-volume:/var/lib/mysql:rw
-    environment:
-      - MYSQL_ROOT_PASSWORD
-    network_mode: bridge
-    ports:
-      - 127.0.0.1:3307:3306
 
   mailcatch:
     image: mailhog/mailhog
@@ -45,7 +32,7 @@ services:
     volumes:
       - dockerdev-workspace-volume:/data
     links:
-      - mariadb
+      - db
       - mailcatch
       - redis
     network_mode: bridge
@@ -91,10 +78,11 @@ services:
         - FROM_TAG=php73-fpm
     environment:
       - "BLACKFIRE_AGENT_SOCKET=unix:///dev/null"
+      - MFTF_DEBUG=1
     volumes:
       - dockerdev-workspace-volume:/data
     links:
-      - mariadb
+      - db
       - mailcatch
       - redis
     network_mode: bridge
@@ -105,11 +93,11 @@ services:
         - FROM_TAG=php74-fpm
     environment:
       - "BLACKFIRE_AGENT_SOCKET=unix:///dev/null"
-      - "MFTF_DEBUG=1"
+      - MFTF_DEBUG=1
     volumes:
       - dockerdev-workspace-volume:/data
     links:
-      - mariadb
+      - db
       - mailcatch
       - redis
     network_mode: bridge
@@ -149,7 +137,7 @@ services:
     build:
       context: build/dist/web
     volumes:
-        - dockerdev-workspace-volume:/data:ro
+      - dockerdev-workspace-volume:/data:ro
     environment:
       - DOMAINSUFFIX
     links:
@@ -168,6 +156,6 @@ services:
     build:
       context: build/dist/ssl
     ports:
-        - "80:80"
-        - "443:443"
+      - "80:80"
+      - "443:443"
     network_mode: bridge

@@ -70,14 +70,14 @@ function install() {
 
 
   echo "### INSTALL PROJECT ###"
-  /usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 -e "CREATE DATABASE IF NOT EXISTS $PROJECT CHARACTER SET='utf8mb4' COLLATE='utf8mb4_general_ci';"
+  /usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 -e "CREATE DATABASE IF NOT EXISTS $PROJECT ;"
 
   cd $STORE_DIR
 
   sed -i "s/CHANGE_ME/${MYSQL_ROOT_PASSWORD}/g" app/etc/env.php.dev app/etc/env.php
 
- dev composer1 install 
-	# dev composer2 install
+#  dev composer1 install 
+	dev composer2 install
   git checkout .gitignore
 }
 
