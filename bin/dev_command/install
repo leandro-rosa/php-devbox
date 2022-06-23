@@ -1,0 +1,39 @@
+/usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 -e "CREATE DATABASE IF NOT EXISTS $1 ;"
+
+dev magento setup:install \
+--base-url=http://vanilla.magento2.localhost/ \
+--db-host=db \
+--db-name=vanilla \
+--db-user=root \
+--db-password=magento2 \
+--admin-firstname=Leandro \
+--admin-lastname=Rosa \
+--admin-email=rosa@mailinator.com \
+--admin-user=admin \
+--admin-password=rosa123 \
+--language=en_US \
+--currency=USD \
+--timezone=America/Chicago \
+--use-rewrites=1 \
+--search-engine=elasticsearch7 \
+--elasticsearch-host=elasticsearch7 \
+--elasticsearch-port=9200 \
+--elasticsearch-index-prefix=vanilla \
+--elasticsearch-timeout=15 \
+--amqp-host=rabbitmq \
+--amqp-port=5672 \
+--amqp-user=guest \
+--amqp-password=guest \
+--amqp-virtualhost=/ \
+--session-save=redis \
+--session-save-redis-host=redis \
+--session-save-redis-port=6379 \
+--session-save-redis-db=1 \
+--cache-backend=redis \
+--cache-backend-redis-server=redis \
+--cache-backend-redis-port=6379 \
+--cache-backend-redis-db=0 \
+--page-cache=redis \
+--page-cache-redis-server=redis \
+--page-cache-redis-port=6379 \
+--page-cache-redis-db=2

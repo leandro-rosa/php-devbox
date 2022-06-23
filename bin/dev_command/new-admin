@@ -4,7 +4,7 @@ if [ -z $1 ]; then
 fi
 
 
-echo "bin/magento admin:user:create --admin-user=$USER --admin-password=rosa123 --admin-email=$USER@mailinator.com --admin-firstname=Leandro --admin-lastname=Rosa"
+echo "bin/magento admin:user:create --admin-user=$USER --admin-password=rosa123 --admin-email=$USER@classyllama.com --admin-firstname=Leandro --admin-lastname=Rosa"
 
-. ./console  bin/magento admin:user:create --admin-user="$USER" --admin-password="rosa123" --admin-email="$USER@mailinator.com" --admin-firstname="Leandro" --admin-lastname="Rosa";
+. ./console  bin/magento admin:user:create --admin-user="$USER" --admin-password="rosa123" --admin-email="$USER@classyllama.com" --admin-firstname="Leandro" --admin-lastname="Rosa";
 return $?;

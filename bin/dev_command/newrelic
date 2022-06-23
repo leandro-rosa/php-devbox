@@ -1,0 +1,20 @@
+if [ "$#" -ne 1 ]; then
+    SCRIPT_PATH=`basename "$0"`
+    echo "Usage: $SCRIPT_PATH enable|disable"
+    exit 1;
+fi
+
+# Expects service to be called app in docker-compose.yml
+SERVICE_ID=$(docker-compose ps -q ${DEV_PHP})
+
+if [ "$1" == "enable" ]; then
+    docker exec -i $SERVICE_ID bash -c \
+        '[ -f /usr/local/etc/php/disabled/newrelic.ini ] && cd /usr/local/etc/php/ && mv disabled/newrelic.ini conf.d/  || echo "Newrelic already enabled"'
+else
+    docker exec -i $SERVICE_ID bash -c \
+        '[ -f /usr/local/etc/php/conf.d/newrelic.ini ] && cd /usr/local/etc/php/ && mkdir -p disabled/ && mv conf.d/newrelic.ini disabled/ || echo "Newrelic already disabled"'
+fi
+
+docker restart $SERVICE_ID
+
+docker exec -i $SERVICE_ID bash -c '$(php -m | grep -q newrelic) && echo "Status: Newrelic ENABLED" || echo "Status: Newrelic DISABLED"'

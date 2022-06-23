@@ -38,6 +38,8 @@ function importDb() {
   sed -i 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/' .dump.sql
 
   echo "### START DUMP ####"
+  /usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 -e "DROP DATABASE IF EXISTS $PROJECT"
+  /usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 -e "CREATE DATABASE IF NOT EXISTS $PROJECT ;"
   /usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 $PROJECT < .dump.sql
 }
 
@@ -97,8 +99,8 @@ function configureDb() {
   dev magerun2 config:set catalog/search/elasticsearch7_server_hostname elasticsearch7 --lock-env
 
   echo "### CONFIGURE BASE URL ###"
-  dev magerun2 config:set web/unsecure/base_url http://$PROJECT.magento2.localhost/ --lock-env
-  dev magerun2 config:set web/secure/base_url http://$PROJECT.magento2.localhost/ --lock-env
+  dev magerun2 config:set web/unsecure/base_url https://$PROJECT.magento2.localhost/ --lock-env
+  dev magerun2 config:set web/secure/base_url https://$PROJECT.magento2.localhost/ --lock-env
 
   echo "### CONFIGURE ADMIN SESSION LIFETIME ###"
   dev magerun2 config:set admin/security/session_lifetime 31536000 --lock-env

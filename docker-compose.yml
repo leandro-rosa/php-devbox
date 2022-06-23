@@ -42,6 +42,7 @@ services:
     volumes:
       - dockerdev-workspace-volume:/data
     links:
+      - db
       - mailcatch
       - redis
     network_mode: bridge
@@ -54,6 +55,7 @@ services:
       - dockerdev-workspace-volume:/data
     links:
       - mailcatch
+      - db
       - redis
     network_mode: bridge
   php72:
@@ -68,6 +70,7 @@ services:
     links:
       - mailcatch
       - redis
+      - db
     network_mode: bridge
   php73:
     build:
@@ -111,6 +114,7 @@ services:
     links:
       - mailcatch
       - redis
+      - db
     network_mode: bridge
 
   php81:
@@ -125,6 +129,7 @@ services:
     links:
       - mailcatch
       - redis
+      - db
     network_mode: bridge
 
   redis:

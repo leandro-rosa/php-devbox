@@ -10,7 +10,7 @@ git reset --hard origin/$1;
 
 rm -rf vendor/;
 
-dev composer1 install;
+dev composer2 install;
 
 git checkout .gitignore;
 

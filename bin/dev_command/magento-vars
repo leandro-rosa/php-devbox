@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# see https://carstenwindler.de/php/enable-xdebug-on-demand-in-your-local-docker-environment/
+
+if [ -z $1 ]; then
+    SCRIPT_PATH=`basename "$0"`
+    echo "Project name is required"
+    echo "Usage: $SCRIPT_PATH [PROJET] [enable|disable]"
+    exit 1;
+fi
+
+if [ -z $2 ]; then
+    SCRIPT_PATH=`basename "$0"`
+    echo "Usage: $SCRIPT_PATH [PROJET] [enable|disable]"
+    exit 1;
+fi
+
+# Expects service to be called app in docker-compose.yml
+SERVICE_ID=$(docker-compose ps -q ${DEV_PHP})
+
+if [ "$2" == "enable" ]; then
+    echo "echo \"auto_prepend_file = /data/$1/magento2\" > /usr/local/etc/php/conf.d/magento-vars.ini"
+    docker exec -i $SERVICE_ID bash -c \
+        "echo \"auto_prepend_file = /data/$1/magento2/m2-vars.php\" > /usr/local/etc/php/conf.d/magento-vars.ini; \
+        cat /usr/local/etc/php/conf.d/magento-vars.ini;"; 
+    echo "Configured $1 magento vars";
+    docker exec -i $SERVICE_ID bash -c \
+        "cat /usr/local/etc/php/conf.d/magento-vars.ini";
+    
+else
+    docker exec -i $SERVICE_ID bash -c \
+        'rm /usr/local/etc/php/conf.d/magento-vars.ini';
+    echo "Removed magento vars";
+    docker exec -i $SERVICE_ID bash -c \
+        "cat /usr/local/etc/php/conf.d/magento-vars.ini";
+fi
+
+docker restart $SERVICE_ID
