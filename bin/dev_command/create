@@ -38,8 +38,6 @@ function importDb() {
   sed -i 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/' .dump.sql
 
   echo "### START DUMP ####"
-  /usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 -e "DROP DATABASE IF EXISTS $PROJECT"
-  /usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 -e "CREATE DATABASE IF NOT EXISTS $PROJECT ;"
   /usr/bin/mysql -h 127.0.0.1 -u root -pmagento2 --port 3308 $PROJECT < .dump.sql
 }
 
@@ -78,8 +76,8 @@ function install() {
 
   sed -i "s/CHANGE_ME/${MYSQL_ROOT_PASSWORD}/g" app/etc/env.php.dev app/etc/env.php
 
-#  dev composer1 install 
-	dev composer2 install
+#  dev composer2 install 
+	dev composer1 install
   git checkout .gitignore
 }
 
